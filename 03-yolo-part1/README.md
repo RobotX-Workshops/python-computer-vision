@@ -57,6 +57,7 @@ Run `yolo_performance_analysis.py` to analyze detection performance and paramete
 ### Bonus Exercise: Image Segmentation
 
 Run `image_segmentation.py` to compare traditional and modern segmentation methods:
+
 - Traditional methods: thresholding, K-means, watershed, GrabCut
 - Modern instance segmentation with YOLO-seg
 - Pixel-level object understanding beyond bounding boxes
