@@ -54,6 +54,13 @@ Run `realtime_yolo_detection.py` to detect objects in video streams.
 
 Run `yolo_performance_analysis.py` to analyze detection performance and parameters.
 
+### Bonus Exercise: Image Segmentation
+
+Run `image_segmentation.py` to compare traditional and modern segmentation methods:
+- Traditional methods: thresholding, K-means, watershed, GrabCut
+- Modern instance segmentation with YOLO-seg
+- Pixel-level object understanding beyond bounding boxes
+
 ## Getting Started
 
 1. Install the required dependencies:
@@ -78,6 +85,12 @@ Run `yolo_performance_analysis.py` to analyze detection performance and paramete
 
    ```bash
    python realtime_yolo_detection.py
+   ```
+
+5. Explore image segmentation (bonus exercise):
+
+   ```bash
+   python image_segmentation.py
    ```
 
 ## Tips for Success
