@@ -205,3 +205,26 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Machine Learning Models and Weights
+# PyTorch model weights
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# YOLO weights and cache
+yolo*.pt
+yolo*.onnx
+runs/
+weights/
+
+# Captured images and videos from demos
+captured_*.jpg
+captured_*.png
+captured_*.mp4
+captured_*.avi
+
+# Face recognition database
+faces_database/
+known_faces/

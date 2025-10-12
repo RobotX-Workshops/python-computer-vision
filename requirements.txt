@@ -1,52 +1,15 @@
 # RobotX Computer Vision Workshop - Complete Requirements
-# This file includes all dependencies for all workshop modules
+# This file references all module-specific requirements files
 # 
 # For Python 3.8-3.11 compatibility (recommended: Python 3.10)
 # If using Python 3.12, some packages may need to be installed via conda
 
-# ========================================
-# CORE COMPUTER VISION LIBRARIES
-# ========================================
-# Used across all modules
-opencv-python>=4.9.0
-numpy>=1.24.0
-matplotlib>=3.8.0
-
-# ========================================
-# MODULE 1: Introduction & Canny Edge Detection
-# ========================================
-# Core libraries only (included above)
-
-# ========================================
-# MODULE 2: Face Detection
-# ========================================
-# Build tools and face recognition libraries
-cmake
-dlib
-face-recognition
-
-# ========================================
-# MODULE 3 & 4: YOLO Object Detection
-# ========================================
-# Deep learning and YOLO dependencies
-ultralytics>=8.1.0
-torch>=2.1.0
-torchvision>=0.16.0
-Pillow>=10.0.0
-PyYAML>=6.0.0
-tqdm>=4.66.0
-requests>=2.31.0
-
-# Training and experiment tracking (Module 4)
-wandb>=0.16.0
-
-# ========================================
-# MODULE 5: Visual SLAM
-# ========================================
-# Scientific computing and 3D processing
-scipy>=1.11.0
-scikit-image>=0.22.0
-open3d>=0.18.0
+# Install dependencies for all workshop modules by referencing their requirements files
+-r 01-intro-canny-edge/requirements.txt
+-r 02-face-detection/requirements.txt
+-r 03-yolo-part1/requirements.txt
+-r 04-yolo-part2/requirements.txt
+-r 05-visual-slam/requirements.txt
 
 # ========================================
 # INSTALLATION NOTES

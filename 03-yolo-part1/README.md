@@ -43,12 +43,15 @@ YOLO revolutionized object detection by treating it as a single regression probl
 ## Exercises
 
 ### Exercise 1: Basic YOLO Detection
+
 Run `basic_yolo_detection.py` to learn fundamental object detection with YOLO.
 
 ### Exercise 2: Real-time YOLO Detection
+
 Run `realtime_yolo_detection.py` to detect objects in video streams.
 
 ### Exercise 3: YOLO Performance Analysis
+
 Run `yolo_performance_analysis.py` to analyze detection performance and parameters.
 
 ## Getting Started

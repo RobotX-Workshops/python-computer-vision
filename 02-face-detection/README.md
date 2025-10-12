@@ -52,13 +52,54 @@ The `face-recognition` library provides state-of-the-art face recognition capabi
 
 ## Exercises
 
-### Exercise 1: Basic Face Detection
+### Exercise 1: Basic Face Detection (`basic_face_detection.py`)
 
-Run `basic_face_detection.py` to learn fundamental face detection with Haar cascades.
+Learn fundamental face detection using OpenCV's Haar cascades:
 
-### Exercise 2: Real-time Face Detection and Recognition
+- Load and configure Haar cascade classifiers
+- Detect faces in static images
+- Draw bounding boxes around detected faces
+- Adjust detection parameters for better accuracy
+- Handle multiple faces in a single image
 
-Run `realtime_face_detection.py` to detect and recognize faces from webcam feed in real-time using the `face_recognition` library.
+### Exercise 2: Real-time Face Detection (`realtime_face_detection.py`)
+
+Implement live face detection and recognition:
+
+- Capture video from webcam
+- Detect faces in real-time video streams
+- Build a simple face database
+- Perform face recognition against known faces
+- Display confidence scores and person names
+
+### Exercise 3: Advanced Face Recognition (`advanced_face_detection.py`)
+
+Explore the face_recognition library for deep learning-based detection:
+
+- Use deep learning models for more accurate face detection
+- Compare Haar cascades vs. deep learning approaches
+- Generate 128-dimensional face encodings
+- Calculate face similarities and distances
+- Understand encoding quality and robustness
+
+### Exercise 4: Interactive Camera Face Recognition (`camera_face_capture.py`)
+
+Complete face recognition workflow with camera integration:
+
+- Interactive menu system for face recognition tasks
+- Capture photos directly from camera
+- Build and manage a face database
+- Real-time face recognition with known faces
+- Face analysis and similarity testing
+
+### Exercise 5: Simple Camera Demo (`simple_camera_demo.py`)
+
+Streamlined face recognition demonstration:
+
+- Single-run photo capture and analysis
+- Automatic face detection and annotation
+- Educational information about face recognition
+- Perfect for quick demonstrations and learning
 
 ### Exercise 3: Advanced Face Recognition Demo
 

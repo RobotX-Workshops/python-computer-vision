@@ -128,7 +128,15 @@ def demonstrate_confidence_threshold():
     print("=== Confidence Threshold Demo ===")
     
     detector = YOLODetector()
-    test_image = create_test_scene()
+    
+    # Load existing test image
+    test_image_path = 'yolo_test_scene.jpeg'
+    if not os.path.exists(test_image_path):
+        print(f"Error: {test_image_path} not found. Creating a simple test scene...")
+        test_image = create_test_scene()
+    else:
+        test_image = cv2.imread(test_image_path)
+        print(f"Loaded test image: {test_image_path}")
     
     thresholds = [0.1, 0.3, 0.5, 0.7, 0.9]
     
@@ -160,11 +168,15 @@ def analyze_detections():
     
     detector = YOLODetector()
     
-    # Create test images
-    test_images = [
-        create_test_scene(),
-        # You can add more test images here
-    ]
+    # Load existing test image
+    test_image_path = 'yolo_test_scene.jpeg'
+    if os.path.exists(test_image_path):
+        test_images = [cv2.imread(test_image_path)]
+        print(f"Using existing test image: {test_image_path}")
+    else:
+        # Fallback to created scene if file doesn't exist
+        test_images = [create_test_scene()]
+        print("Test image not found, using generated scene")
     
     for i, image in enumerate(test_images):
         print(f"\nAnalyzing test image {i + 1}...")
@@ -211,9 +223,13 @@ def main():
         # Initialize detector
         detector = YOLODetector()
         
-        print("1. Creating test scene...")
-        test_scene = create_test_scene()
-        cv2.imwrite('yolo_test_scene.png', test_scene)
+        print("1. Using existing test scene...")
+        if not os.path.exists('yolo_test_scene.jpeg'):
+            print("   yolo_test_scene.jpeg not found, creating fallback scene...")
+            test_scene = create_test_scene()
+            cv2.imwrite('yolo_test_scene.png', test_scene)
+        else:
+            print("   Found yolo_test_scene.jpeg")
         
         print("2. Demonstrating confidence thresholds...")
         demonstrate_confidence_threshold()
