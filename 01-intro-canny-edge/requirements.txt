@@ -1,0 +1,4 @@
+# Core computer vision dependencies
+opencv-python
+numpy
+matplotlib
