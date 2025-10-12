@@ -38,7 +38,17 @@ Haar cascades are machine learning-based approaches where a cascade function is 
 
 - **DNN-based Detection**: Deep learning models (SSD, MTCNN)
 - **Face Landmarks**: 68-point facial landmark detection
-- **Face Recognition**: Identifying specific individuals
+- **Face Recognition**: Identifying specific individuals using deep learning embeddings
+
+### Face Recognition Library
+
+The `face-recognition` library provides state-of-the-art face recognition capabilities:
+
+- **Deep Learning Based**: Uses a pre-trained deep neural network
+- **Face Encoding**: Converts faces into 128-dimensional embeddings
+- **High Accuracy**: More accurate than traditional methods
+- **Face Comparison**: Calculate similarity between faces
+- **Multiple Detection Models**: HOG (fast) and CNN (accurate) options
 
 ## Exercises
 
@@ -46,17 +56,17 @@ Haar cascades are machine learning-based approaches where a cascade function is 
 
 Run `basic_face_detection.py` to learn fundamental face detection with Haar cascades.
 
-### Exercise 2: Real-time Face Detection
+### Exercise 2: Real-time Face Detection and Recognition
 
-Run `realtime_face_detection.py` to detect faces from webcam feed in real-time.
+Run `realtime_face_detection.py` to detect and recognize faces from webcam feed in real-time using the `face_recognition` library.
 
-### Exercise 3: Advanced Face Detection
+### Exercise 3: Advanced Face Recognition Demo
 
-Run `advanced_face_detection.py` to explore DNN-based face detection and landmarks.
+Run `advanced_face_detection.py` to compare OpenCV Haar cascades with the face_recognition library and explore recognition accuracy.
 
-### Exercise 4: Multiple Face Detection
+### Exercise 4: Face Recognition Database
 
-Run `multi_face_detection.py` to handle scenarios with multiple faces.
+Learn how to build and manage a face recognition database with known individuals.
 
 ## Getting Started
 
@@ -72,13 +82,13 @@ Run `multi_face_detection.py` to handle scenarios with multiple faces.
    python basic_face_detection.py
    ```
 
-3. Try real-time detection (requires webcam):
+3. Try real-time face recognition (requires webcam):
 
    ```bash
    python realtime_face_detection.py
    ```
 
-4. Explore advanced features:
+4. Compare detection methods and explore face recognition:
 
    ```bash
    python advanced_face_detection.py
