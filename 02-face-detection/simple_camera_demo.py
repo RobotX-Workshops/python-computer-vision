@@ -3,12 +3,51 @@ Simple Camera Face Recognition Demo - Module 2 Exercise 4
 Capture a photo and analyze faces - simplified version
 """
 
+import argparse
+import os
+from datetime import datetime
+from typing import Optional
+
 import cv2
 import face_recognition
-import numpy as np
-from datetime import datetime
 
-def capture_photo():
+
+def parse_args() -> argparse.Namespace:
+    """Parse command line arguments for the simple demo"""
+    parser = argparse.ArgumentParser(
+        description="Capture a photo for face analysis using a local camera or stream"
+    )
+    parser.add_argument(
+        "--video-source",
+        default=None,
+        help="Camera index (e.g. 0) or stream URL (e.g. udp://host.docker.internal:5000)"
+    )
+    return parser.parse_args()
+
+
+def resolve_video_source(cli_value: Optional[str]) -> str:
+    """Resolve the video source from CLI or the VIDEO_SOURCE environment variable"""
+    env_value = os.getenv("VIDEO_SOURCE")
+    if cli_value:
+        return cli_value
+    if env_value:
+        return env_value
+    return "0"
+
+
+def open_capture(video_source: str) -> Optional[cv2.VideoCapture]:
+    """Create a VideoCapture using either a numeric index or URL"""
+    if video_source.isdigit():
+        cap = cv2.VideoCapture(int(video_source))
+    else:
+        cap = cv2.VideoCapture(video_source)
+    if not cap.isOpened():
+        print(f"❌ Error: Cannot access video source {video_source}")
+        return None
+    return cap
+
+
+def capture_photo(video_source: str):
     """
     Capture a single photo from camera
     """
@@ -16,10 +55,9 @@ def capture_photo():
     print("Make sure you're positioned well in front of the camera")
     print("Press SPACE when ready, or 'q' to quit")
     
-    cap = cv2.VideoCapture(0)
-    
-    if not cap.isOpened():
-        print("❌ Error: Cannot access camera")
+    cap = open_capture(video_source)
+
+    if cap is None:
         return None
     
     while True:
@@ -120,7 +158,7 @@ def demonstrate_face_comparison(face_data):
         print("ℹ️  Only one face found - skipping comparison demo")
         return
     
-    print(f"\n=== Face Comparison Demo ===")
+    print("\n=== Face Comparison Demo ===")
     print(f"Comparing {len(face_data['face_encodings'])} faces found in the photo")
     
     # Compare each pair of faces
@@ -178,9 +216,13 @@ def main():
     print("2. 🔍 Detect any faces in the photo")
     print("3. 🧠 Analyze the faces using face recognition")
     print("4. 📊 Show you the results")
+
+    args = parse_args()
+    video_source = resolve_video_source(args.video_source)
+    print(f"Video source: {video_source}")
     
     # Step 1: Capture photo
-    photo_path = capture_photo()
+    photo_path = capture_photo(video_source)
     if not photo_path:
         print("❌ No photo captured. Exiting.")
         return
@@ -197,7 +239,7 @@ def main():
     # Step 4: Show educational information
     show_face_recognition_info()
     
-    print(f"\n✅ Demo complete!")
+    print("\n✅ Demo complete!")
     print(f"📁 Your photo is saved as: {photo_path}")
     print("🔄 Run this script again to capture more photos!")
 

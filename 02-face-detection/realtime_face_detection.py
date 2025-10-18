@@ -3,11 +3,14 @@ Real-time Face Detection and Recognition - Module 2 Exercise 2
 Advanced face detection using both OpenCV Haar cascades and face_recognition library
 """
 
-import cv2
-import numpy as np
-import face_recognition
+import argparse
 import os
 import pickle
+from typing import Optional
+
+import cv2
+import face_recognition
+import numpy as np
 from datetime import datetime
 
 class AdvancedFaceDetector:
@@ -18,7 +21,7 @@ class AdvancedFaceDetector:
     def __init__(self):
         # OpenCV Haar cascade for fast detection
         self.face_cascade = cv2.CascadeClassifier(
-            cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+            cv2.data.haarcascades + 'haarcascade_frontalface_default.xml' # type: ignore
         )
         
         # Known faces database
@@ -282,23 +285,57 @@ def create_sample_faces():
     for filename, name in sample_faces:
         print(f"  {filename} -> Will be recognized as '{name}'")
 
+def parse_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(
+        description="Real-time face detection with optional network camera support"
+    )
+    parser.add_argument(
+        "--video-source",
+        default=None,
+        help="Camera index (e.g. 0) or network stream URL (e.g. udp://host.docker.internal:5000)"
+    )
+    return parser.parse_args()
+
+
+def resolve_video_source(cli_value: Optional[str]) -> str:
+    """Resolve the active video source from CLI or environment"""
+    env_value = os.getenv("VIDEO_SOURCE")
+    if cli_value:
+        return cli_value
+    if env_value:
+        return env_value
+    return "0"
+
+
+def open_capture(source: str) -> cv2.VideoCapture:
+    """Create a cv2.VideoCapture using either index or URL"""
+    if source.isdigit():
+        return cv2.VideoCapture(int(source))
+    return cv2.VideoCapture(source)
+
+
 def main():
     """Main function for real-time face detection and recognition"""
     print("=== Advanced Face Detection and Recognition ===")
-    
+
+    args = parse_args()
+    video_source = resolve_video_source(args.video_source)
+    print(f"Video source: {video_source}")
+
     # Initialize detector
     detector = AdvancedFaceDetector()
-    
+
     # Try to add faces from existing images
     detector = add_faces_from_images()
-    
+
     # If no known faces, create samples
     if len(detector.known_face_names) == 0:
         create_sample_faces()
         print("\nContinuing with detection only (no recognition)...")
-    
+
     # Initialize camera
-    cap = cv2.VideoCapture(0)
+    cap = open_capture(video_source)
     if not cap.isOpened():
         print("Error: Cannot access camera. Using sample images instead.")
         return

@@ -3,22 +3,68 @@ Camera Capture Face Recognition - Module 2 Exercise 4
 Capture photos from camera and use them for face recognition
 """
 
-import cv2
-import numpy as np
-import face_recognition
+import argparse
 import os
 from datetime import datetime
+from typing import Optional
+
+import cv2
+import face_recognition
+import numpy as np
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command line arguments for the camera capture demo"""
+    parser = argparse.ArgumentParser(
+        description="Interactive face recognition demo with configurable video sources"
+    )
+    parser.add_argument(
+        "--video-source",
+        default=None,
+        help="Camera index (e.g. 0) or network stream URL (e.g. udp://host.docker.internal:5000)"
+    )
+    return parser.parse_args()
+
+
+def resolve_video_source(cli_value: Optional[str]) -> str:
+    """Resolve the active video source using CLI and environment fallbacks"""
+    env_value = os.getenv("VIDEO_SOURCE")
+    if cli_value:
+        return cli_value
+    if env_value:
+        return env_value
+    return "0"
 
 class CameraFaceRecognition:
     """
     Capture photos from camera and perform face recognition
     """
-    
-    def __init__(self):
+
+    def __init__(self, video_source: Optional[str] = None):
         self.known_face_encodings = []
         self.known_face_names = []
         self.captured_images = []
-        
+        self.video_source = video_source or os.getenv("VIDEO_SOURCE", "0")
+
+    def set_video_source(self, source: str) -> None:
+        """Update the active video source used by capture methods"""
+        self.video_source = source
+        print(f"Video source updated to: {self.video_source}")
+
+    def _open_capture(self) -> Optional[cv2.VideoCapture]:
+        """Create a cv2.VideoCapture for the configured source"""
+        source = self.video_source
+        if source is None:
+            source = "0"
+        if source.isdigit():
+            cap = cv2.VideoCapture(int(source))
+        else:
+            cap = cv2.VideoCapture(source)
+        if not cap.isOpened():
+            print(f"Error: Cannot access video source {source}")
+            return None
+        return cap
+
     def capture_photo_from_camera(self, photo_name="captured_photo"):
         """
         Capture a photo from the camera
@@ -29,10 +75,9 @@ class CameraFaceRecognition:
         Returns:
             filename: Path to the saved photo, or None if failed
         """
-        cap = cv2.VideoCapture(0)
-        
-        if not cap.isOpened():
-            print("Error: Cannot access camera")
+        cap = self._open_capture()
+
+        if cap is None:
             return None
         
         print("=== Camera Capture Mode ===")
@@ -248,10 +293,11 @@ class CameraFaceRecognition:
             print("3. Recognize faces (in last photo)")
             print("4. Show database status")
             print("5. Capture and test recognition")
-            print("6. Exit")
+            print("6. Change video source (current: {0})".format(self.video_source))
+            print("7. Exit")
             
             try:
-                choice = input("\nEnter your choice (1-6): ").strip()
+                choice = input("\nEnter your choice (1-7): ").strip()
                 
                 if choice == '1':
                     # Capture and analyze
@@ -292,8 +338,8 @@ class CameraFaceRecognition:
                 
                 elif choice == '4':
                     # Show database status
-                    print(f"\n--- Database Status ---")
-                    print(f"Known faces: {len(self.known_face_names)}")
+                    print("\n--- Database Status ---")
+                    print("Known faces: {0}".format(len(self.known_face_names)))
                     if self.known_face_names:
                         for i, name in enumerate(self.known_face_names):
                             print(f"  {i+1}. {name}")
@@ -321,10 +367,17 @@ class CameraFaceRecognition:
                                 cv2.destroyAllWindows()
                 
                 elif choice == '6':
+                    new_source = input("Enter camera index or stream URL: ").strip()
+                    if new_source:
+                        self.set_video_source(new_source)
+                    else:
+                        print("Video source unchanged.")
+
+                elif choice == '7':
                     break
                 
                 else:
-                    print("Invalid choice. Please enter 1-6.")
+                    print("Invalid choice. Please enter 1-7.")
             
             except (EOFError, KeyboardInterrupt):
                 print("\nExiting...")
@@ -338,10 +391,14 @@ def main():
     """
     print("=== Camera-based Face Recognition Demo ===")
     print("This demo captures photos from your camera and uses them for face recognition.")
-    
+
+    args = parse_args()
+    video_source = resolve_video_source(args.video_source)
+    print(f"Video source: {video_source}")
+
     # Initialize the face recognition system
-    face_rec = CameraFaceRecognition()
-    
+    face_rec = CameraFaceRecognition(video_source)
+
     # Run interactive session
     face_rec.interactive_session()
 

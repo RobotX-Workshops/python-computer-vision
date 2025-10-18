@@ -129,6 +129,19 @@ Learn how to build and manage a face recognition database with known individuals
    python realtime_face_detection.py
    ```
 
+   All camera-based scripts accept a `--video-source` flag or the `VIDEO_SOURCE` environment variable. Pass a camera index (for example `0`) or a network stream URL such as `udp://host.docker.internal:5000`.
+
+   ```bash
+   # Use a network stream published from the host machine
+   export VIDEO_SOURCE=udp://host.docker.internal:5000
+   python realtime_face_detection.py
+
+   # Or specify it per run
+   python realtime_face_detection.py --video-source http://host.docker.internal:8080/stream.m3u8
+   ```
+
+   See `docs/remote-camera-streaming.md` for detailed platform-specific instructions on streaming webcams into containers.
+
 4. Compare detection methods and explore face recognition:
 
    ```bash
