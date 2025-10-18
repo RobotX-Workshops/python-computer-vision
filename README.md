@@ -30,7 +30,7 @@ This workshop is designed for **Python 3.8 to 3.11**. We recommend using Python 
 ## Getting Started
 
 1. **Check Python Version**:
-    Ensure you're using Python 3.8-3.11:
+    Ensure you're using Python > 3.8:
 
     ```bash
     python --version

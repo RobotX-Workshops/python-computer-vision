@@ -228,3 +228,11 @@ captured_*.avi
 # Face recognition database
 faces_database/
 known_faces/
+
+
+# --- IGNORE ---
+sample_clean.png
+sample_noisy.png
+pattern_noisy.png
+pattern_simple.png
+pattern_textured.png

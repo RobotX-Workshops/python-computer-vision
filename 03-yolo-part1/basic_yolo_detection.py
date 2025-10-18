@@ -136,7 +136,11 @@ def demonstrate_confidence_threshold():
         test_image = create_test_scene()
     else:
         test_image = cv2.imread(test_image_path)
-        print(f"Loaded test image: {test_image_path}")
+        if test_image is None:
+            print(f"Error: Could not load {test_image_path}. Creating a simple test scene...")
+            test_image = create_test_scene()
+        else:
+            print(f"Loaded test image: {test_image_path}")
     
     thresholds = [0.1, 0.3, 0.5, 0.7, 0.9]
     
@@ -179,6 +183,10 @@ def analyze_detections():
         print("Test image not found, using generated scene")
     
     for i, image in enumerate(test_images):
+        if image is None:
+            print(f"Skipping test image {i + 1} - image is None")
+            continue
+            
         print(f"\nAnalyzing test image {i + 1}...")
         
         results, annotated = detector.detect_objects(image)

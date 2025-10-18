@@ -3,8 +3,13 @@ Real-time Canny Edge Detection - Module 1 Exercise 3
 Apply Canny edge detection to webcam feed in real-time
 """
 
+import os
+
 import cv2
 import numpy as np
+
+
+_GUI_AVAILABLE = None
 
 class RealTimeCanny:
     """
@@ -90,6 +95,10 @@ class RealTimeCanny:
         """
         if not hasattr(self, 'cap') or not self.cap.isOpened():
             print("Webcam not available. Please check your camera connection.")
+            return
+
+        if not has_gui_support():
+            print("GUI display not available. Skipping real-time demo.")
             return
         
         # Create control trackbars
@@ -187,7 +196,7 @@ class RealTimeCanny:
             cv2.destroyAllWindows()
             print("Real-time edge detection stopped")
 
-def test_with_static_image():
+def test_with_static_image(headless=False):
     """
     Test the edge detection with a static image if webcam is not available
     """
@@ -243,10 +252,40 @@ def test_with_static_image():
     
     combined = np.vstack([top_row, bottom_row, third_row])
     
-    cv2.imshow('Static Image Canny Test', combined)
-    print("Press any key to close the window...")
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    if headless:
+        output_path = 'canny_static_test.png'
+        cv2.imwrite(output_path, combined)
+        print(f"Saved static test output to {output_path}")
+    else:
+        try:
+            cv2.imshow('Static Image Canny Test', combined)
+            print("Press any key to close the window...")
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        except cv2.error as err:
+            output_path = 'canny_static_test.png'
+            cv2.imwrite(output_path, combined)
+            print(f"GUI display failed ({err}). Saved static test output to {output_path}")
+
+def has_gui_support():
+    """Return True if OpenCV can create GUI windows."""
+    global _GUI_AVAILABLE
+    if _GUI_AVAILABLE is not None:
+        return _GUI_AVAILABLE
+
+    display = os.environ.get('DISPLAY') or os.environ.get('WAYLAND_DISPLAY')
+    if not display:
+        _GUI_AVAILABLE = False
+        return _GUI_AVAILABLE
+
+    test_window = '_opencv_gui_test'
+    try:
+        cv2.namedWindow(test_window)
+        cv2.destroyWindow(test_window)
+        _GUI_AVAILABLE = True
+    except cv2.error:
+        _GUI_AVAILABLE = False
+    return _GUI_AVAILABLE
 
 def main():
     """
@@ -256,15 +295,20 @@ def main():
     
     # Try to use webcam first
     test_cap = cv2.VideoCapture(0)
-    if test_cap.isOpened():
+    gui_available = has_gui_support()
+
+    if test_cap.isOpened() and gui_available:
         test_cap.release()
         print("Webcam detected. Starting real-time demo...")
         
         canny_detector = RealTimeCanny()
         canny_detector.run()
     else:
-        print("No webcam detected. Running static image test...")
-        test_with_static_image()
+        if not test_cap.isOpened():
+            print("No webcam detected. Running static image test...")
+        elif not gui_available:
+            print("GUI display unavailable. Running static image test and saving results...")
+        test_with_static_image(headless=not gui_available)
 
 if __name__ == "__main__":
     main()

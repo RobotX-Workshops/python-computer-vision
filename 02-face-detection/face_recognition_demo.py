@@ -15,7 +15,18 @@ def demonstrate_face_detection_methods():
     print("=== Face Detection Methods Comparison ===")
     
     # Initialize OpenCV face detector
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    try:
+        # Try using cv2.data first (newer OpenCV versions)
+        cascade_path = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml' # type: ignore
+    except AttributeError:
+        # Fallback for older OpenCV versions
+        cascade_path = 'haarcascade_frontalface_default.xml'
+    
+    face_cascade = cv2.CascadeClassifier(cascade_path)
+    
+    if face_cascade.empty():
+        print("Warning: Could not load face cascade classifier")
+        print("Make sure OpenCV is properly installed with cascade files")
     
     print("\nMethod 1: OpenCV Haar Cascades")
     print("- Fast detection")
