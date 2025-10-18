@@ -275,7 +275,7 @@ def main():
     face_recognizer.demonstrate_recognition_accuracy()
     
     # Test recognition on known images
-    print(f"\n=== Testing Recognition ===")
+    print("\n=== Testing Recognition ===")
     for i, filename in enumerate(existing_faces[:2]):  # Test first 2 images
         print(f"\nTesting recognition on {filename}...")
         results = face_recognizer.recognize_faces_in_image(filename)
@@ -287,7 +287,7 @@ def main():
     
     # Compare detection methods
     if existing_faces:
-        print(f"\n=== Comparing Detection Methods ===")
+        print("\n=== Comparing Detection Methods ===")
         test_image = existing_faces[0]
         opencv_count, fr_count = face_recognizer.compare_detection_methods(test_image)
         

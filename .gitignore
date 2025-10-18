@@ -236,3 +236,5 @@ sample_noisy.png
 pattern_noisy.png
 pattern_simple.png
 pattern_textured.png
+sample_person**
+.gitignore
