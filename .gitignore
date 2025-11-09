@@ -229,12 +229,8 @@ captured_*.avi
 faces_database/
 known_faces/
 
+# Generated data artifacts
+data/
+!data/.gitkeep
 
-# --- IGNORE ---
-sample_clean.png
-sample_noisy.png
-pattern_noisy.png
-pattern_simple.png
-pattern_textured.png
-sample_person**
-.gitignore
+

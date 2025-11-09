@@ -6,12 +6,17 @@ Advanced face detection using both OpenCV Haar cascades and face_recognition lib
 import argparse
 import os
 import pickle
+from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
-import cv2
-import face_recognition
+import cv2 # type: ignore
+import face_recognition # type: ignore
 import numpy as np
-from datetime import datetime
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 class AdvancedFaceDetector:
     """
@@ -27,7 +32,7 @@ class AdvancedFaceDetector:
         # Known faces database
         self.known_face_encodings = []
         self.known_face_names = []
-        self.faces_db_path = "known_faces.pkl"
+        self.faces_db_path = DATA_DIR / "known_faces.pkl"
         
         # Load existing face database if it exists
         self.load_face_database()
@@ -38,9 +43,9 @@ class AdvancedFaceDetector:
         
     def load_face_database(self):
         """Load known faces from pickle file"""
-        if os.path.exists(self.faces_db_path):
+        if self.faces_db_path.exists():
             try:
-                with open(self.faces_db_path, 'rb') as f:
+                with self.faces_db_path.open('rb') as f:
                     data = pickle.load(f)
                     self.known_face_encodings = data['encodings']
                     self.known_face_names = data['names']
@@ -57,7 +62,7 @@ class AdvancedFaceDetector:
                 'encodings': self.known_face_encodings,
                 'names': self.known_face_names
             }
-            with open(self.faces_db_path, 'wb') as f:
+            with self.faces_db_path.open('wb') as f:
                 pickle.dump(data, f)
             print(f"Saved {len(self.known_face_names)} faces to database")
         except Exception as e:
@@ -230,38 +235,38 @@ def add_faces_from_images():
     """Add known faces from image files"""
     detector = AdvancedFaceDetector()
     
-    # Look for face images in current directory
-    image_extensions = ['.jpg', '.jpeg', '.png', '.bmp']
-    face_images = []
-    
-    for file in os.listdir('.'):
-        if any(file.lower().endswith(ext) for ext in image_extensions):
-            if 'face' in file.lower() or 'person' in file.lower():
-                face_images.append(file)
+    # Look for face images in the shared data directory
+    image_extensions = {'.jpg', '.jpeg', '.png', '.bmp'}
+    face_images = [
+        path for path in DATA_DIR.glob('*')
+        if path.suffix.lower() in image_extensions and (
+            'face' in path.name.lower() or 'person' in path.name.lower()
+        )
+    ]
     
     if not face_images:
-        print("No face images found. Create some image files with 'face' or 'person' in the name.")
+        print("No face images found. Add files containing 'face' or 'person' in their name to the data/ directory.")
         return detector
     
-    print(f"Found potential face images: {face_images}")
+    print(f"Found potential face images: {[path.name for path in face_images]}")
     
     for image_file in face_images:
         try:
             # Load image
-            image = cv2.imread(image_file)
+            image = cv2.imread(str(image_file))
             if image is None:
                 continue
                 
             # Extract name from filename (remove extension and common prefixes)
-            name = os.path.splitext(image_file)[0]
+            name = image_file.stem
             name = name.replace('face_', '').replace('person_', '').replace('_', ' ').title()
             
             # Add to known faces
             success = detector.add_known_face(image, name)
             if success:
-                print(f"Successfully added {name} from {image_file}")
+                print(f"Successfully added {name} from {image_file.name}")
         except Exception as e:
-            print(f"Error processing {image_file}: {e}")
+            print(f"Error processing {image_file.name}: {e}")
     
     return detector
 
@@ -278,7 +283,7 @@ def create_sample_faces():
     ]
     
     print("To test face recognition:")
-    print("1. Add some face images to this directory")
+    print(f"1. Add some face images to {DATA_DIR} (inside the repository)")
     print("2. Name them with 'face_' or 'person_' prefix")
     print("3. Run this script again")
     print("\nExample filenames:")
@@ -385,8 +390,8 @@ def main():
             if key == ord('q'):
                 break
             elif key == ord('s'):
-                filename = f"face_detection_frame_{frame_count}_{datetime.now().strftime('%H%M%S')}.jpg"
-                cv2.imwrite(filename, display_frame)
+                filename = DATA_DIR / f"face_detection_frame_{frame_count}_{datetime.now().strftime('%H%M%S')}.jpg"
+                cv2.imwrite(str(filename), display_frame)
                 print(f"Saved frame as {filename}")
             elif key == ord('a'):
                 # Add current face to database

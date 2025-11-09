@@ -6,6 +6,11 @@ Implement and experiment with the Canny edge detection algorithm
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 def canny_edge_detection(image, low_threshold=50, high_threshold=150, blur_kernel=5):
     """
@@ -152,7 +157,7 @@ def edge_statistics(image, edges):
     edge_pixels = np.sum(edges > 0)
     edge_percentage = (edge_pixels / total_pixels) * 100
     
-    print(f"=== Edge Detection Statistics ===")
+    print("=== Edge Detection Statistics ===")
     print(f"Image size: {image.shape[1]} x {image.shape[0]} pixels")
     print(f"Total pixels: {total_pixels:,}")
     print(f"Edge pixels: {edge_pixels:,}")
@@ -195,9 +200,9 @@ def main():
     pattern1, pattern2, pattern3 = create_test_patterns()
     
     # Save test patterns
-    cv2.imwrite('pattern_simple.png', pattern1)
-    cv2.imwrite('pattern_noisy.png', pattern2)
-    cv2.imwrite('pattern_textured.png', pattern3)
+    cv2.imwrite(str(DATA_DIR / 'pattern_simple.png'), pattern1)
+    cv2.imwrite(str(DATA_DIR / 'pattern_noisy.png'), pattern2)
+    cv2.imwrite(str(DATA_DIR / 'pattern_textured.png'), pattern3)
     
     patterns = [
         (pattern1, "Simple Geometric Shapes"),

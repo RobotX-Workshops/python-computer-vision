@@ -6,7 +6,11 @@ Learn fundamental face detection using Haar cascade classifiers
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import os
+from pathlib import Path
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 class FaceDetector:
     """
@@ -263,7 +267,7 @@ def comprehensive_detection_demo():
         plt.show()
         
         # Save annotated image
-        cv2.imwrite(f'face_detection_result_{i + 1}.png', annotated)
+    cv2.imwrite(str(DATA_DIR / f'face_detection_result_{i + 1}.png'), annotated)
 
 def detection_statistics(detector, image):
     """
@@ -324,8 +328,8 @@ def main():
     test_img1, test_img2 = create_test_images()
     
     # Save test images
-    cv2.imwrite('test_face_1.png', test_img1)
-    cv2.imwrite('test_face_2.png', test_img2)
+    cv2.imwrite(str(DATA_DIR / 'test_face_1.png'), test_img1)
+    cv2.imwrite(str(DATA_DIR / 'test_face_2.png'), test_img2)
     
     print("2. Demonstrating parameter effects...")
     demonstrate_parameters()

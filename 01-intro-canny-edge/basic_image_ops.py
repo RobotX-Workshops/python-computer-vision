@@ -6,13 +6,23 @@ Learn the fundamentals of loading, displaying, and manipulating images with Open
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 def load_and_display_image(image_path):
     """
     Load an image and display it using both OpenCV and Matplotlib
     """
+    if not isinstance(image_path, Path):
+        image_path = Path(image_path)
+    if not image_path.is_absolute():
+        image_path = DATA_DIR / image_path
+
     # Load image using OpenCV (BGR format)
-    img_bgr = cv2.imread(image_path)
+    img_bgr = cv2.imread(str(image_path))
     
     if img_bgr is None:
         print(f"Error: Could not load image from {image_path}")
@@ -126,8 +136,8 @@ def main():
     clean_img, noisy_img = create_sample_image()
     
     # Save sample images
-    cv2.imwrite('sample_clean.png', clean_img)
-    cv2.imwrite('sample_noisy.png', noisy_img)
+    cv2.imwrite(str(DATA_DIR / 'sample_clean.png'), clean_img)
+    cv2.imwrite(str(DATA_DIR / 'sample_noisy.png'), noisy_img)
     
     print("2. Loading and displaying images...")
     

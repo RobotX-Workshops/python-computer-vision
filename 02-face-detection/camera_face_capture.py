@@ -6,11 +6,16 @@ Capture photos from camera and use them for face recognition
 import argparse
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 import cv2
 import face_recognition
 import numpy as np
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def parse_args() -> argparse.Namespace:
@@ -102,9 +107,9 @@ class CameraFaceRecognition:
             if key == ord(' '):  # Space key
                 # Capture the photo
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-                filename = f"{photo_name}_{timestamp}.jpg"
-                
-                cv2.imwrite(filename, frame)
+                filename = DATA_DIR / f"{photo_name}_{timestamp}.jpg"
+
+                cv2.imwrite(str(filename), frame)
                 print(f"Photo captured and saved as: {filename}")
                 
                 cap.release()
@@ -131,7 +136,11 @@ class CameraFaceRecognition:
         print(f"\n=== Analyzing {image_path} ===")
         
         # Load image
-        image = cv2.imread(image_path)
+        image_path = Path(image_path)
+        if not image_path.is_absolute():
+            image_path = DATA_DIR / image_path
+
+        image = cv2.imread(str(image_path))
         if image is None:
             print("Error: Could not load image")
             return None
@@ -149,7 +158,7 @@ class CameraFaceRecognition:
         annotated_image = image.copy()
         
         face_info = {
-            'image_path': image_path,
+            'image_path': str(image_path),
             'face_count': len(face_locations),
             'face_locations': face_locations,
             'face_encodings': face_encodings,

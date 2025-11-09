@@ -6,10 +6,15 @@ Capture a photo and analyze faces - simplified version
 import argparse
 import os
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
-import cv2
-import face_recognition
+import cv2 # type: ignore
+import face_recognition # type: ignore
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def parse_args() -> argparse.Namespace:
@@ -27,7 +32,7 @@ def parse_args() -> argparse.Namespace:
 
 def resolve_video_source(cli_value: Optional[str]) -> str:
     """Resolve the video source from CLI or the VIDEO_SOURCE environment variable"""
-    env_value = os.getenv("VIDEO_SOURCE")
+    env_value = os.getenv("VIDEO_SOURCE", "")
     if cli_value:
         return cli_value
     if env_value:
@@ -76,8 +81,8 @@ def capture_photo(video_source: str):
         key = cv2.waitKey(1) & 0xFF
         if key == ord(' '):  # Space to capture
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"captured_photo_{timestamp}.jpg"
-            cv2.imwrite(filename, frame)
+            filename = DATA_DIR / f"captured_photo_{timestamp}.jpg"
+            cv2.imwrite(str(filename), frame)
             print(f"✅ Photo saved as: {filename}")
             
             cap.release()
@@ -98,7 +103,11 @@ def analyze_faces_in_photo(image_path):
     print(f"\n=== Analyzing faces in {image_path} ===")
     
     # Load image
-    image = cv2.imread(image_path)
+    image_path = Path(image_path)
+    if not image_path.is_absolute():
+        image_path = DATA_DIR / image_path
+
+    image = cv2.imread(str(image_path))
     if image is None:
         print("❌ Error: Could not load image")
         return None
@@ -143,7 +152,7 @@ def analyze_faces_in_photo(image_path):
     cv2.destroyAllWindows()
     
     return {
-        'image_path': image_path,
+        'image_path': str(image_path),
         'original_image': image,
         'face_locations': face_locations,
         'face_encodings': face_encodings,

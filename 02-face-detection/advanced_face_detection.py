@@ -7,7 +7,11 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import face_recognition
-import os
+from pathlib import Path
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 class FaceRecognitionDemo:
     """
@@ -30,8 +34,12 @@ class FaceRecognitionDemo:
             success: Boolean indicating if encoding was successful
         """
         try:
+            image_path = Path(image_path)
+            if not image_path.is_absolute():
+                image_path = DATA_DIR / image_path
+
             # Load image
-            image = face_recognition.load_image_file(image_path)
+            image = face_recognition.load_image_file(str(image_path))
             
             # Get face encodings
             face_encodings = face_recognition.face_encodings(image)
@@ -67,8 +75,9 @@ class FaceRecognitionDemo:
         cv2.circle(face1, (80, 80), 8, (0, 0, 0), -1)   # Left eye
         cv2.circle(face1, (120, 80), 8, (0, 0, 0), -1)  # Right eye
         cv2.ellipse(face1, (100, 120), (15, 8), 0, 0, 180, (100, 50, 50), 2)  # Mouth
-        cv2.imwrite('sample_person_alice.jpg', face1)
-        sample_faces.append(('sample_person_alice.jpg', 'Alice'))
+        alice_path = DATA_DIR / 'sample_person_alice.jpg'
+        cv2.imwrite(str(alice_path), face1)
+        sample_faces.append((alice_path, 'Alice'))
         
         # Sample face 2 - oval face
         face2 = np.ones((200, 200, 3), dtype=np.uint8) * 210
@@ -77,12 +86,13 @@ class FaceRecognitionDemo:
         cv2.circle(face2, (115, 85), 6, (0, 0, 0), -1)  # Right eye
         cv2.rectangle(face2, (95, 115), (105, 125), (120, 60, 60), -1)  # Nose
         cv2.ellipse(face2, (100, 135), (12, 6), 0, 0, 180, (100, 50, 50), 2)  # Mouth
-        cv2.imwrite('sample_person_bob.jpg', face2)
-        sample_faces.append(('sample_person_bob.jpg', 'Bob'))
+        bob_path = DATA_DIR / 'sample_person_bob.jpg'
+        cv2.imwrite(str(bob_path), face2)
+        sample_faces.append((bob_path, 'Bob'))
         
         print("Created sample face images:")
-        for filename, name in sample_faces:
-            print(f"  {filename} -> {name}")
+        for filepath, name in sample_faces:
+            print(f"  {filepath.name} -> {name}")
         
         return sample_faces
     
@@ -98,7 +108,11 @@ class FaceRecognitionDemo:
         """
         try:
             # Load test image
-            test_image = face_recognition.load_image_file(test_image_path)
+            test_image_path = Path(test_image_path)
+            if not test_image_path.is_absolute():
+                test_image_path = DATA_DIR / test_image_path
+
+            test_image = face_recognition.load_image_file(str(test_image_path))
             
             # Find face locations and encodings
             face_locations = face_recognition.face_locations(test_image)
@@ -150,7 +164,11 @@ class FaceRecognitionDemo:
             image_path: Path to test image
         """
         # Load image with OpenCV
-        opencv_image = cv2.imread(image_path)
+        image_path = Path(image_path)
+        if not image_path.is_absolute():
+            image_path = DATA_DIR / image_path
+
+        opencv_image = cv2.imread(str(image_path))
         if opencv_image is None:
             print(f"Could not load image: {image_path}")
             return
@@ -243,24 +261,26 @@ def main():
     face_recognizer = FaceRecognitionDemo()
     
     # Check for existing face images
-    existing_faces = []
-    for file in os.listdir('.'):
-        if file.lower().endswith(('.jpg', '.jpeg', '.png')) and 'person' in file.lower():
-            existing_faces.append(file)
+    existing_faces = [
+        path for path in DATA_DIR.glob('*')
+        if path.suffix.lower() in {'.jpg', '.jpeg', '.png'} and 'person' in path.name.lower()
+    ]
     
     if not existing_faces:
         print("No existing face images found. Creating sample database...")
         sample_faces = face_recognizer.create_sample_database()
         
         # Load the sample faces
-        for filename, name in sample_faces:
-            face_recognizer.load_and_encode_face(filename, name)
+        for filepath, name in sample_faces:
+            face_recognizer.load_and_encode_face(filepath, name)
+
+        existing_faces = [filepath for filepath, _ in sample_faces]
     else:
-        print(f"Found existing face images: {existing_faces}")
+        print(f"Found existing face images: {[path.name for path in existing_faces]}")
         # Load existing faces
         for filename in existing_faces:
             # Extract name from filename
-            name = filename.replace('sample_person_', '').replace('.jpg', '').replace('.jpeg', '').replace('.png', '').title()
+            name = filename.name.replace('sample_person_', '').replace('.jpg', '').replace('.jpeg', '').replace('.png', '').title()
             face_recognizer.load_and_encode_face(filename, name)
     
     if len(face_recognizer.known_face_names) == 0:
@@ -277,7 +297,7 @@ def main():
     # Test recognition on known images
     print("\n=== Testing Recognition ===")
     for i, filename in enumerate(existing_faces[:2]):  # Test first 2 images
-        print(f"\nTesting recognition on {filename}...")
+        print(f"\nTesting recognition on {filename.name}...")
         results = face_recognizer.recognize_faces_in_image(filename)
         
         if results:
@@ -289,11 +309,13 @@ def main():
     if existing_faces:
         print("\n=== Comparing Detection Methods ===")
         test_image = existing_faces[0]
-        opencv_count, fr_count = face_recognizer.compare_detection_methods(test_image)
-        
-        print(f"Detection comparison on {test_image}:")
-        print(f"  OpenCV Haar Cascade: {opencv_count} faces")
-        print(f"  face_recognition library: {fr_count} faces")
+        comparison = face_recognizer.compare_detection_methods(test_image)
+        if comparison:
+            opencv_count, fr_count = comparison
+
+            print(f"Detection comparison on {test_image.name}:")
+            print(f"  OpenCV Haar Cascade: {opencv_count} faces")
+            print(f"  face_recognition library: {fr_count} faces")
     
     print("\n=== Demo Complete ===")
     print("Key Learnings:")

@@ -4,9 +4,14 @@ Apply Canny edge detection to webcam feed in real-time
 """
 
 import os
+from pathlib import Path
 
 import cv2
 import numpy as np
+
+
+DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
 _GUI_AVAILABLE = None
@@ -171,8 +176,8 @@ class RealTimeCanny:
                     break
                 elif key == ord('s'):
                     # Save current frame
-                    filename = f'canny_frame_{frame_count}.png'
-                    cv2.imwrite(filename, combined)
+                    filename = DATA_DIR / f'canny_frame_{frame_count}.png'
+                    cv2.imwrite(str(filename), combined)
                     print(f"Saved frame as {filename}")
                 elif key == ord('r'):
                     # Reset parameters
@@ -253,8 +258,8 @@ def test_with_static_image(headless=False):
     combined = np.vstack([top_row, bottom_row, third_row])
     
     if headless:
-        output_path = 'canny_static_test.png'
-        cv2.imwrite(output_path, combined)
+        output_path = DATA_DIR / 'canny_static_test.png'
+        cv2.imwrite(str(output_path), combined)
         print(f"Saved static test output to {output_path}")
     else:
         try:
@@ -263,8 +268,8 @@ def test_with_static_image(headless=False):
             cv2.waitKey(0)
             cv2.destroyAllWindows()
         except cv2.error as err:
-            output_path = 'canny_static_test.png'
-            cv2.imwrite(output_path, combined)
+            output_path = DATA_DIR / 'canny_static_test.png'
+            cv2.imwrite(str(output_path), combined)
             print(f"GUI display failed ({err}). Saved static test output to {output_path}")
 
 def has_gui_support():
