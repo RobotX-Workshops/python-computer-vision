@@ -47,6 +47,8 @@ class AdvancedFaceDetector:
             try:
                 with self.faces_db_path.open('rb') as f:
                     data = pickle.load(f)
+                    print("The data from the face database is as follows:")
+                    print(data)
                     self.known_face_encodings = data['encodings']
                     self.known_face_names = data['names']
                 print(f"Loaded {len(self.known_face_names)} known faces from database")
