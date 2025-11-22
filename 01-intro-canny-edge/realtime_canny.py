@@ -110,12 +110,19 @@ class RealTimeCanny:
         self.create_trackbars()
         
         print("=== Real-time Canny Edge Detection ===")
-        print("Controls:")
-        print("- Use trackbars to adjust parameters in real-time")
+        print("\nInitial Configuration:")
+        print(f"  Low Threshold:  {self.low_threshold}")
+        print(f"  High Threshold: {self.high_threshold}")
+        print(f"  Blur Kernel:    {self.blur_kernel}×{self.blur_kernel}")
+        print(f"  Threshold Ratio: 1:{self.high_threshold/self.low_threshold:.1f}")
+        
+        print("\nControls:")
+        print("- Use track bars to adjust parameters in real-time")
         print("- Press 'q' to quit")
         print("- Press 's' to save current frame")
         print("- Press 'r' to reset parameters")
         print("- Press 'h' to show/hide help text")
+        print("- Press 'p' to print current configuration")
         
         show_help = True
         frame_count = 0
@@ -191,6 +198,17 @@ class RealTimeCanny:
                 elif key == ord('h'):
                     # Toggle help display
                     show_help = not show_help
+                elif key == ord('p'):
+                    # Print current configuration
+                    print(f"\n--- Current Configuration (Frame {frame_count}) ---")
+                    print(f"  Low Threshold:  {self.low_threshold}")
+                    print(f"  High Threshold: {self.high_threshold}")
+                    print(f"  Blur Kernel:    {self.blur_kernel}×{self.blur_kernel}")
+                    print(f"  Threshold Ratio: 1:{self.high_threshold/max(self.low_threshold, 1):.2f}")
+                    edge_pixels = np.sum(edges > 0)
+                    total_pixels = edges.shape[0] * edges.shape[1]
+                    print(f"  Edge Coverage:  {edge_pixels:,} pixels ({100*edge_pixels/total_pixels:.2f}%)")
+                    print("-----------------------------------------------")
         
         except KeyboardInterrupt:
             print("Interrupted by user")
