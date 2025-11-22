@@ -17,11 +17,13 @@ This workshop is a hands-on journey into the world of AI-powered robotics. We wi
 ## Requirements
 
 ### Python Version
+
 This workshop is designed for **Python 3.8 to 3.11**. We recommend using Python 3.10 for the best compatibility with all dependencies.
 
 **Note**: Python 3.12+ may have compatibility issues with some dependencies (particularly dlib and face-recognition). If you're using Python 3.12, you may need to install these packages using conda instead of pip.
 
 ### System Requirements
+
 - **OS**: Windows 10+, macOS 10.14+, or Ubuntu 18.04+
 - **Memory**: 4GB RAM minimum (8GB recommended)
 - **Storage**: 2GB free disk space
@@ -54,12 +56,14 @@ This workshop is designed for **Python 3.8 to 3.11**. We recommend using Python 
 4. **Install Dependencies**:
 
     **Option A - Install all dependencies at once (recommended)**:
+
     ```bash
     pip install -r requirements.txt
     ```
 
     **Option B - Install module by module**:
     Navigate into each module's directory and install its specific requirements:
+
     ```bash
     cd 01-intro-canny-edge
     pip install -r requirements.txt
@@ -69,6 +73,7 @@ This workshop is designed for **Python 3.8 to 3.11**. We recommend using Python 
     ```
 
     **Alternative for Python 3.12 users**: If you encounter dependency issues, try using conda:
+
     ```bash
     conda create -n computer-vision python=3.10
     conda activate computer-vision

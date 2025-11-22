@@ -34,25 +34,32 @@ def load_and_display_image(image_path):
     # Convert to grayscale
     img_gray = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
     
+    # Calculate histogram statistics
+    mean_intensity = np.mean(img_gray)
+    std_intensity = np.std(img_gray)
+    
     # Display images
     plt.figure(figsize=(15, 5))
     
     plt.subplot(1, 3, 1)
     plt.imshow(img_rgb)
-    plt.title('Original Image (RGB)')
+    plt.title('Original Image (RGB)\nColor channels: Red, Green, Blue')
     plt.axis('off')
     
     plt.subplot(1, 3, 2)
     plt.imshow(img_gray, cmap='gray')
-    plt.title('Grayscale Image')
+    plt.title(f'Grayscale Image\n0=Black, 255=White\nMean: {mean_intensity:.1f}')
     plt.axis('off')
     
     # Show histogram
     plt.subplot(1, 3, 3)
-    plt.hist(img_gray.flatten(), bins=256, range=(0, 256))
-    plt.title('Intensity Histogram')
-    plt.xlabel('Pixel Intensity')
-    plt.ylabel('Frequency')
+    plt.hist(img_gray.flatten(), bins=256, range=(0, 256), color='gray', alpha=0.7)
+    plt.axvline(mean_intensity, color='red', linestyle='--', linewidth=2, label=f'Mean: {mean_intensity:.1f}')
+    plt.title('Pixel Intensity Histogram\nDistribution of brightness values')
+    plt.xlabel('Pixel Intensity (0=Dark → 255=Bright)')
+    plt.ylabel('Frequency (Pixel Count)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
     plt.show()
@@ -87,19 +94,19 @@ def apply_basic_filters(img_gray):
     plt.figure(figsize=(20, 10))
     
     images = [
-        (img_gray, 'Original'),
-        (gaussian_blur, 'Gaussian Blur'),
-        (median_blur, 'Median Blur'),
-        (bilateral, 'Bilateral Filter'),
-        (sobel_x, 'Sobel X'),
-        (sobel_y, 'Sobel Y'),
-        (sobel_combined, 'Sobel Combined')
+        (img_gray, 'Original\nUnprocessed grayscale'),
+        (gaussian_blur, 'Gaussian Blur\nReduces noise & detail'),
+        (median_blur, 'Median Blur\nRemoves salt-pepper noise'),
+        (bilateral, 'Bilateral Filter\nSmooths while preserving edges'),
+        (sobel_x, 'Sobel X (Horizontal)\nDetects vertical edges'),
+        (sobel_y, 'Sobel Y (Vertical)\nDetects horizontal edges'),
+        (sobel_combined, 'Sobel Combined\nAll edge directions')
     ]
     
     for i, (img, title) in enumerate(images):
         plt.subplot(2, 4, i + 1)
         plt.imshow(img, cmap='gray')
-        plt.title(title)
+        plt.title(title, fontsize=10)
         plt.axis('off')
     
     plt.tight_layout()
