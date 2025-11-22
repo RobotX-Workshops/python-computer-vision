@@ -51,16 +51,17 @@ def compare_thresholds(image):
     # Original image
     plt.subplot(2, 3, 1)
     plt.imshow(image, cmap='gray')
-    plt.title('Original Image')
+    plt.title('Original Image\nInput for edge detection')
     plt.axis('off')
     
     # Apply Canny with different thresholds
     for i, (low, high, label) in enumerate(threshold_combinations):
         edges, _ = canny_edge_detection(image, low, high)
+        edge_count = np.sum(edges > 0)
         
         plt.subplot(2, 3, i + 2)
         plt.imshow(edges, cmap='gray')
-        plt.title(f'{label}\n(Low: {low}, High: {high})')
+        plt.title(f'{label}\nThresholds: {low}/{high}\nEdges: {edge_count:,} pixels', fontsize=10)
         plt.axis('off')
     
     plt.tight_layout()
@@ -89,16 +90,16 @@ def step_by_step_canny(image, low_threshold=50, high_threshold=150):
     plt.figure(figsize=(20, 10))
     
     images_and_titles = [
-        (original, 'Original Image'),
-        (blurred, 'Gaussian Blur'),
-        (gradient_magnitude, 'Gradient Magnitude'),
-        (edges, 'Final Edges')
+        (original, 'Step 1: Original Image\nInput grayscale image'),
+        (blurred, 'Step 2: Gaussian Blur\nReduces noise for cleaner edges'),
+        (gradient_magnitude, 'Step 3: Gradient Magnitude\nShows edge strength (brightness)'),
+        (edges, 'Step 4: Final Edges\nAfter non-max suppression & hysteresis')
     ]
     
     for i, (img, title) in enumerate(images_and_titles):
         plt.subplot(2, 2, i + 1)
         plt.imshow(img, cmap='gray')
-        plt.title(title)
+        plt.title(title, fontsize=11)
         plt.axis('off')
     
     plt.tight_layout()
@@ -119,13 +120,15 @@ def interactive_canny_demo(image):
     
     for i, kernel in enumerate(blur_kernels):
         edges, blurred = canny_edge_detection(image, blur_kernel=kernel)
+        edge_count = np.sum(edges > 0)
         
         plt.subplot(1, 4, i + 1)
         plt.imshow(edges, cmap='gray')
-        plt.title(f'Blur Kernel: {kernel}x{kernel}')
+        smoothness = ['Sharp/Noisy', 'Balanced', 'Smooth', 'Very Smooth'][i]
+        plt.title(f'Kernel: {kernel}×{kernel}\n{smoothness}\nEdges: {edge_count:,}', fontsize=10)
         plt.axis('off')
     
-    plt.suptitle('Effect of Gaussian Blur Kernel Size')
+    plt.suptitle('Effect of Gaussian Blur Kernel Size\n(Larger kernel = smoother but less detail)', fontsize=12)
     plt.tight_layout()
     plt.show()
     
@@ -139,13 +142,15 @@ def interactive_canny_demo(image):
     for i, ratio in enumerate(ratios):
         high_thresh = int(base_low * ratio)
         edges, _ = canny_edge_detection(image, base_low, high_thresh)
+        edge_count = np.sum(edges > 0)
         
         plt.subplot(1, 4, i + 1)
         plt.imshow(edges, cmap='gray')
-        plt.title(f'Ratio: 1:{ratio}\n(Low: {base_low}, High: {high_thresh})')
+        selectivity = ['Weak edges included', 'Moderate filtering', 'Strong filtering', 'Very selective'][i]
+        plt.title(f'Ratio 1:{ratio}\nLow:{base_low} High:{high_thresh}\n{selectivity}\nEdges: {edge_count:,}', fontsize=9)
         plt.axis('off')
     
-    plt.suptitle('Effect of Threshold Ratios')
+    plt.suptitle('Effect of Threshold Ratios\n(Recommended ratio 1:2 to 1:3 for most images)', fontsize=12)
     plt.tight_layout()
     plt.show()
 
