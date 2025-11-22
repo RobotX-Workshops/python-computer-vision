@@ -4,9 +4,7 @@ Demonstrate face_recognition library capabilities without requiring real photos
 """
 
 import cv2
-import numpy as np
 import face_recognition
-import matplotlib.pyplot as plt
 
 def demonstrate_face_detection_methods():
     """
@@ -113,6 +111,7 @@ def webcam_detection_demo():
         return
     
     frame_count = 0
+    face_locations = []  # Initialize face_locations
     
     try:
         while True:
