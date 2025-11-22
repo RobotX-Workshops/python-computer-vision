@@ -4,3 +4,4 @@ matplotlib>=3.8.0
 cmake
 dlib
 face-recognition
+face_recognition_models @ git+https://github.com/ageitgey/face_recognition_models
