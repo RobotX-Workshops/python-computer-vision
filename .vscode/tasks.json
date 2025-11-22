@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Git: Squash Merge",
+      "type": "shell",
+      "command": "git checkout ${input:baseBranch} && git pull origin ${input:baseBranch} && git checkout ${input:branchName} && git rebase ${input:baseBranch} && git checkout ${input:baseBranch} && git merge --squash ${input:branchName}",
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "branchName",
+      "type": "promptString",
+      "description": "Enter the name of the feature branch to integrate"
+    },
+    {
+      "id": "baseBranch",
+      "type": "promptString",
+      "description": "Enter the name of the base branch to merge into",
+      "default": "main"
+    }
+  ]
+}

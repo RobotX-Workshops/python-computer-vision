@@ -1,0 +1,34 @@
+# RobotX Computer Vision Workshop - Complete Requirements
+# This file references all module-specific requirements files
+# 
+# For Python 3.8-3.11 compatibility (recommended: Python 3.10)
+# If using Python 3.12, some packages may need to be installed via conda
+
+# Install dependencies for all workshop modules by referencing their requirements files
+-r 01-intro-canny-edge/requirements.txt
+-r 02-face-detection/requirements.txt
+-r 03-yolo-part1/requirements.txt
+-r 04-yolo-part2/requirements.txt
+-r 05-visual-slam/requirements.txt
+
+# ========================================
+# INSTALLATION NOTES
+# ========================================
+#
+# OPTION 1 - Install everything at once:
+#   pip install -r requirements.txt
+#
+# OPTION 2 - Install module by module:
+#   cd 01-intro-canny-edge && pip install -r requirements.txt
+#   cd ../02-face-detection && pip install -r requirements.txt
+#   # ... and so on
+#
+# OPTION 3 - For Python 3.12 users (if pip fails):
+#   conda create -n computer-vision python=3.10
+#   conda activate computer-vision
+#   pip install -r requirements.txt
+#
+# TROUBLESHOOTING:
+# - If dlib fails to install: conda install -c conda-forge dlib
+# - If face-recognition fails: conda install -c conda-forge face-recognition  
+# - For ARM64 Mac issues with torch: pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu

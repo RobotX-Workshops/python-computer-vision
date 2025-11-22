@@ -1,0 +1,32 @@
+{
+    "[markdown]": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true
+    },
+    "markdownlint.config": {
+
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.markdownlint": "explicit"
+    },
+    "cSpell.words": [
+        "thresholding",
+        "yourname",
+        "yourusername"
+    ],
+    "python.analysis.extraPaths": [
+        "./venv/lib/python3.12/site-packages",
+        "./venv/lib/python3.11/site-packages",
+        "./venv/lib/python3.10/site-packages",
+        "./venv/lib/python3.9/site-packages",
+        "./venv/lib/python3.8/site-packages",
+        "./.venv/lib/python3.12/site-packages",
+        "./.venv/lib/python3.11/site-packages",
+        "./.venv/lib/python3.10/site-packages",
+        "./.venv/lib/python3.9/site-packages",
+        "./.venv/lib/python3.8/site-packages",
+    ],
+    "python.defaultInterpreterPath": "./venv/bin/python",
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.typeCheckingMode": "basic"
+}
