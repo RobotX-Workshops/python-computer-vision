@@ -232,5 +232,7 @@ known_faces/
 # Generated data artifacts
 data/
 !data/.gitkeep
+!data/sample_person_*.jpg
+!data/sample_person_*.png
 
 
