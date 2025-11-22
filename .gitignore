@@ -236,4 +236,5 @@ data/
 !data/sample_person_*.jpg
 !data/sample_person_*.png
 
-
+# Mac
+.DS_Store

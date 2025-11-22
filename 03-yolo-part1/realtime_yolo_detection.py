@@ -128,7 +128,7 @@ class RealtimeYOLODetector:
         Args:
             video_source: Video source (0 for webcam, or path to video file)
         """
-        print(f"\n=== Real-time YOLO Detection ===")
+        print("\n=== Real-time YOLO Detection ===")
         print(f"Video source: {video_source}")
         print(f"Confidence threshold: {self.confidence_threshold}")
         print(f"IoU threshold: {self.iou_threshold}")
@@ -246,7 +246,7 @@ class RealtimeYOLODetector:
             cv2.destroyAllWindows()
             
             # Print statistics
-            print(f"\n=== Session Statistics ===")
+            print("\n=== Session Statistics ===")
             print(f"Frames processed: {frame_count}")
             print(f"Average FPS: {self.get_average_fps():.1f}")
             print(f"Frames saved: {saved_count}")
@@ -294,7 +294,7 @@ def main():
     )
     
     # Run detection
-    detector.run_detection(video_source)
+    detector.run_detection(video_source) # type: ignore
 
 
 if __name__ == "__main__":
