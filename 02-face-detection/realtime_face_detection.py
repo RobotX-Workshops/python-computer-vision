@@ -10,8 +10,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-import cv2 # type: ignore
-import face_recognition # type: ignore
+import cv2
+import face_recognition
 import numpy as np
 
 

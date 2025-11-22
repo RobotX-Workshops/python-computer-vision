@@ -9,8 +9,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-import cv2 # type: ignore
-import face_recognition # type: ignore
+import cv2
+import face_recognition
 
 
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
@@ -32,7 +32,7 @@ def parse_args() -> argparse.Namespace:
 
 def resolve_video_source(cli_value: Optional[str]) -> str:
     """Resolve the video source from CLI or the VIDEO_SOURCE environment variable"""
-    env_value = os.getenv("VIDEO_SOURCE", "")
+    env_value = os.getenv("VIDEO_SOURCE")
     if cli_value:
         return cli_value
     if env_value:
@@ -152,7 +152,7 @@ def analyze_faces_in_photo(image_path):
     cv2.destroyAllWindows()
     
     return {
-        'image_path': str(image_path),
+    'image_path': str(image_path),
         'original_image': image,
         'face_locations': face_locations,
         'face_encodings': face_encodings,
