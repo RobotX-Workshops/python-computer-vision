@@ -10,11 +10,18 @@
         "source.fixAll.markdownlint": "explicit"
     },
     "cSpell.words": [
+        "avfoundation",
         "axvline",
+        "choco",
+        "dshow",
+        "ffplay",
+        "ffprobe",
         "gaussian",
         "linestyle",
+        "mpegts",
         "sobel",
         "thresholding",
+        "uyvy",
         "yourname",
         "yourusername"
     ],
