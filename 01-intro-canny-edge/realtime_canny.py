@@ -3,14 +3,20 @@ Real-time Canny Edge Detection - Module 1 Exercise 3
 Apply Canny edge detection to webcam feed in real-time
 """
 
+import argparse
 import os
+import sys
 from pathlib import Path
 
 import cv2
 import numpy as np
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+from camera_utils import VIDEO_SOURCE_HELP, open_capture, resolve_video_source
+
+DATA_DIR = REPO_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -21,13 +27,13 @@ class RealTimeCanny:
     Real-time Canny edge detection from webcam feed
     """
     
-    def __init__(self):
+    def __init__(self, video_source="0"):
         self.low_threshold = 50
         self.high_threshold = 150
         self.blur_kernel = 5
-        
+
         # Initialize webcam
-        self.cap = cv2.VideoCapture(0)
+        self.cap = open_capture(video_source)
         if not self.cap.isOpened():
             print("Error: Cannot open webcam")
             return
@@ -219,26 +225,26 @@ class RealTimeCanny:
             cv2.destroyAllWindows()
             print("Real-time edge detection stopped")
 
-def test_with_static_image(headless=False):
+def test_with_static_image(video_source="0", headless=False):
     """
     Test the edge detection with a static image if webcam is not available
     """
     print("=== Testing with Static Images ===")
-    
+
     # Create a test image
     test_img = np.zeros((480, 640, 3), dtype=np.uint8)
-    
+
     # Add some shapes
     cv2.rectangle(test_img, (100, 100), (300, 200), (255, 255, 255), -1)
     cv2.circle(test_img, (450, 150), 80, (128, 128, 128), -1)
     cv2.rectangle(test_img, (200, 300), (400, 400), (200, 200, 200), 5)
-    
+
     # Add some noise
     noise = np.random.normal(0, 20, test_img.shape)
     test_img = np.clip(test_img.astype(np.float64) + noise, 0, 255).astype(np.uint8)
-    
+
     # Create Canny processor
-    processor = RealTimeCanny()
+    processor = RealTimeCanny(video_source)
     
     # Process the test image with different parameters
     parameters = [
@@ -310,28 +316,40 @@ def has_gui_support():
         _GUI_AVAILABLE = False
     return _GUI_AVAILABLE
 
+def parse_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(description="Real-time Canny edge detection demo")
+    parser.add_argument("--video-source", default=None, help=VIDEO_SOURCE_HELP)
+    return parser.parse_args()
+
+
 def main():
     """
     Main function
     """
     print("=== Real-time Canny Edge Detection Demo ===")
-    
+
+    args = parse_args()
+    video_source = resolve_video_source(args.video_source)
+    print(f"Video source: {video_source}")
+
     # Try to use webcam first
-    test_cap = cv2.VideoCapture(0)
+    test_cap = open_capture(video_source)
+    webcam_available = test_cap.isOpened()
+    test_cap.release()
     gui_available = has_gui_support()
 
-    if test_cap.isOpened() and gui_available:
-        test_cap.release()
+    if webcam_available and gui_available:
         print("Webcam detected. Starting real-time demo...")
-        
-        canny_detector = RealTimeCanny()
+
+        canny_detector = RealTimeCanny(video_source)
         canny_detector.run()
     else:
-        if not test_cap.isOpened():
+        if not webcam_available:
             print("No webcam detected. Running static image test...")
         elif not gui_available:
             print("GUI display unavailable. Running static image test and saving results...")
-        test_with_static_image(headless=not gui_available)
+        test_with_static_image(video_source, headless=not gui_available)
 
 if __name__ == "__main__":
     main()

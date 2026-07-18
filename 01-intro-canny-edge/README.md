@@ -55,6 +55,14 @@ Run `canny_edge_detection.py` to implement and experiment with Canny edge detect
 
 Run `realtime_canny.py` to apply edge detection to webcam feed in real-time.
 
+If you run it without arguments, it lists the available cameras and prompts you to pick one — useful on macOS when an iPhone (Continuity Camera) shows up ahead of the built-in webcam. To skip the prompt, pass the camera index or a stream URL directly:
+
+```bash
+python realtime_canny.py --video-source 1
+# or via environment variable
+VIDEO_SOURCE=1 python realtime_canny.py
+```
+
 ### Exercise 4: Parameter Tuning
 
 Experiment with different threshold values and observe their effects on edge detection quality.

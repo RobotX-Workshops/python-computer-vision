@@ -4,8 +4,8 @@ Advanced face detection using both OpenCV Haar cascades and face_recognition lib
 """
 
 import argparse
-import os
 import pickle
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -14,8 +14,12 @@ import cv2
 import face_recognition
 import numpy as np
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+from camera_utils import VIDEO_SOURCE_HELP, open_capture, resolve_video_source
+
+DATA_DIR = REPO_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 class AdvancedFaceDetector:
@@ -297,29 +301,8 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Real-time face detection with optional network camera support"
     )
-    parser.add_argument(
-        "--video-source",
-        default=None,
-        help="Camera index (e.g. 0) or network stream URL (e.g. udp://host.docker.internal:5000)"
-    )
+    parser.add_argument("--video-source", default=None, help=VIDEO_SOURCE_HELP)
     return parser.parse_args()
-
-
-def resolve_video_source(cli_value: Optional[str]) -> str:
-    """Resolve the active video source from CLI or environment"""
-    env_value = os.getenv("VIDEO_SOURCE")
-    if cli_value:
-        return cli_value
-    if env_value:
-        return env_value
-    return "0"
-
-
-def open_capture(source: str) -> cv2.VideoCapture:
-    """Create a cv2.VideoCapture using either index or URL"""
-    if source.isdigit():
-        return cv2.VideoCapture(int(source))
-    return cv2.VideoCapture(source)
 
 
 def main():

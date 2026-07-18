@@ -17,6 +17,7 @@
         "ffplay",
         "ffprobe",
         "gaussian",
+        "grayscale",
         "linestyle",
         "mpegts",
         "sobel",

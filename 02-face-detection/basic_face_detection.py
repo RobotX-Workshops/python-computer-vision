@@ -1,7 +1,17 @@
 """
 Basic Face Detection - Module 2 Exercise 1
 Learn fundamental face detection using Haar cascade classifiers
+
+Usage:
+    python basic_face_detection.py [image_path ...]
+
+If no image paths are given, real sample photos from the repo-level data/
+directory are used. Haar cascades are trained on real photographic faces,
+so synthetic drawn faces are only used as a last resort (and are expected
+to produce 0 detections).
 """
+
+import sys
 
 import cv2
 import numpy as np
@@ -164,15 +174,41 @@ def create_test_images():
     
     return img1, img2
 
-def demonstrate_parameters():
+def load_real_images(paths=None):
+    """
+    Load real photographs to run detection on.
+
+    Args:
+        paths: Optional list of image paths from the command line.
+               If empty, fall back to known sample photos in DATA_DIR.
+
+    Returns:
+        List of (name, image) tuples for every image that could be read.
+    """
+    if paths:
+        candidates = [Path(p) for p in paths]
+    else:
+        candidates = [
+            DATA_DIR / 'sample_person_alice.jpg',
+            DATA_DIR / 'sample_person_bob.jpg',
+            DATA_DIR / 'person_20251122_095244.jpg',
+        ]
+
+    images = []
+    for path in candidates:
+        img = cv2.imread(str(path))
+        if img is None:
+            print(f"Warning: could not read image: {path}")
+        else:
+            images.append((path.name, img))
+    return images
+
+def demonstrate_parameters(test_img):
     """
     Demonstrate how different parameters affect face detection
     """
     print("=== Parameter Effects Demonstration ===")
-    
-    # Create test image
-    test_img, _ = create_test_images()
-    
+
     detector = FaceDetector()
     
     # Different parameter combinations
@@ -209,20 +245,19 @@ def demonstrate_parameters():
     plt.tight_layout()
     plt.show()
 
-def comprehensive_detection_demo():
+def comprehensive_detection_demo(test_images):
     """
     Comprehensive demonstration of face, eye, and smile detection
+
+    Args:
+        test_images: List of (name, image) tuples to run detection on
     """
     print("=== Comprehensive Detection Demo ===")
-    
+
     detector = FaceDetector()
-    
-    # Create test images
-    test_img1, test_img2 = create_test_images()
-    test_images = [test_img1, test_img2]
-    
-    for i, img in enumerate(test_images):
-        print(f"\nProcessing test image {i + 1}...")
+
+    for i, (name, img) in enumerate(test_images):
+        print(f"\nProcessing {name}...")
         
         # Detect faces
         faces, gray = detector.detect_faces(img)
@@ -250,7 +285,7 @@ def comprehensive_detection_demo():
         
         plt.subplot(1, 3, 1)
         plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-        plt.title(f'Original Image {i + 1}')
+        plt.title(f'Original: {name}')
         plt.axis('off')
         
         plt.subplot(1, 3, 2)
@@ -265,9 +300,9 @@ def comprehensive_detection_demo():
         
         plt.tight_layout()
         plt.show()
-        
+
         # Save annotated image
-    cv2.imwrite(str(DATA_DIR / f'face_detection_result_{i + 1}.png'), annotated)
+        cv2.imwrite(str(DATA_DIR / f'face_detection_result_{i + 1}.png'), annotated)
 
 def detection_statistics(detector, image):
     """
@@ -315,30 +350,37 @@ def main():
     Main function demonstrating basic face detection
     """
     print("=== Basic Face Detection Demo ===")
-    
+
     # Create detector
     detector = FaceDetector()
-    
+
     # Check if cascades loaded properly
     if detector.face_cascade.empty():
         print("Error: Face cascade not loaded. Please check OpenCV installation.")
         return
-    
-    print("1. Creating test images...")
-    test_img1, test_img2 = create_test_images()
-    
-    # Save test images
-    cv2.imwrite(str(DATA_DIR / 'test_face_1.png'), test_img1)
-    cv2.imwrite(str(DATA_DIR / 'test_face_2.png'), test_img2)
-    
+
+    print("1. Loading images...")
+    test_images = load_real_images(sys.argv[1:])
+
+    if not test_images:
+        print("\nNo real photos found — falling back to synthetic test images.")
+        print("NOTE: Haar cascades are trained on real photographic faces.")
+        print("      Expect 0 detections on these drawn shapes; this does NOT")
+        print("      mean detection is broken. Pass a photo path to test it:")
+        print("      python basic_face_detection.py /path/to/photo.jpg")
+        test_img1, test_img2 = create_test_images()
+        cv2.imwrite(str(DATA_DIR / 'test_face_1.png'), test_img1)
+        cv2.imwrite(str(DATA_DIR / 'test_face_2.png'), test_img2)
+        test_images = [('synthetic_face_1', test_img1), ('synthetic_face_2', test_img2)]
+
     print("2. Demonstrating parameter effects...")
-    demonstrate_parameters()
-    
+    demonstrate_parameters(test_images[0][1])
+
     print("3. Running comprehensive detection demo...")
-    comprehensive_detection_demo()
-    
+    comprehensive_detection_demo(test_images)
+
     print("4. Analyzing detection statistics...")
-    detection_statistics(detector, test_img2)
+    detection_statistics(detector, test_images[-1][1])
     
     print("\n=== Exercise Complete ===")
     print("Key Learnings:")

@@ -3,8 +3,25 @@ Face Recognition Library Demo - Module 2 Exercise 3 (Simplified)
 Demonstrate face_recognition library capabilities without requiring real photos
 """
 
+import argparse
+import sys
+from pathlib import Path
+from typing import Optional
+
 import cv2
 import face_recognition
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from camera_utils import VIDEO_SOURCE_HELP, open_capture, resolve_video_source
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(description="Face recognition library demo")
+    parser.add_argument("--video-source", default=None, help=VIDEO_SOURCE_HELP)
+    return parser.parse_args()
+
 
 def demonstrate_face_detection_methods():
     """
@@ -98,14 +115,17 @@ def create_interactive_demo():
             result = "NO MATCH"
         print(f"  Tolerance {tolerance}: {result}")
 
-def webcam_detection_demo():
+def webcam_detection_demo(cli_video_source: Optional[str] = None):
     """
     Real-time face detection demo using webcam
     """
     print("\n=== Real-time Face Detection Demo ===")
     print("Press 'q' to quit, 'h' for help")
-    
-    cap = cv2.VideoCapture(0)
+
+    video_source = resolve_video_source(cli_video_source)
+    print(f"Video source: {video_source}")
+
+    cap = open_capture(video_source)
     if not cap.isOpened():
         print("No webcam available. Skipping real-time demo.")
         return
@@ -207,7 +227,9 @@ def main():
     """
     print("=== Face Recognition Library Demo ===")
     print("This demo explains face recognition concepts and shows basic detection.")
-    
+
+    args = parse_args()
+
     # Demonstrate concepts
     face_cascade = demonstrate_face_detection_methods()
     demonstrate_face_encoding_concepts()
@@ -222,7 +244,7 @@ def main():
     try:
         choice = input("\nEnter choice (1 or 2): ").strip()
         if choice == "1":
-            webcam_detection_demo()
+            webcam_detection_demo(args.video_source)
         else:
             print("Skipping webcam demo.")
     except (EOFError, KeyboardInterrupt):

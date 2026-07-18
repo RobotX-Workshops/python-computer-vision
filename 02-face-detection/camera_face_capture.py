@@ -5,6 +5,7 @@ Capture photos from camera and use them for face recognition
 
 import argparse
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -13,8 +14,13 @@ import cv2
 import face_recognition
 import numpy as np
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+import camera_utils
+from camera_utils import VIDEO_SOURCE_HELP, resolve_video_source
+
+DATA_DIR = REPO_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -23,22 +29,9 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Interactive face recognition demo with configurable video sources"
     )
-    parser.add_argument(
-        "--video-source",
-        default=None,
-        help="Camera index (e.g. 0) or network stream URL (e.g. udp://host.docker.internal:5000)"
-    )
+    parser.add_argument("--video-source", default=None, help=VIDEO_SOURCE_HELP)
     return parser.parse_args()
 
-
-def resolve_video_source(cli_value: Optional[str]) -> str:
-    """Resolve the active video source using CLI and environment fallbacks"""
-    env_value = os.getenv("VIDEO_SOURCE")
-    if cli_value:
-        return cli_value
-    if env_value:
-        return env_value
-    return "0"
 
 class CameraFaceRecognition:
     """
@@ -58,13 +51,8 @@ class CameraFaceRecognition:
 
     def _open_capture(self) -> Optional[cv2.VideoCapture]:
         """Create a cv2.VideoCapture for the configured source"""
-        source = self.video_source
-        if source is None:
-            source = "0"
-        if source.isdigit():
-            cap = cv2.VideoCapture(int(source))
-        else:
-            cap = cv2.VideoCapture(source)
+        source = self.video_source or "0"
+        cap = camera_utils.open_capture(source)
         if not cap.isOpened():
             print(f"Error: Cannot access video source {source}")
             return None

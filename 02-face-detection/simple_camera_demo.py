@@ -4,7 +4,7 @@ Capture a photo and analyze faces - simplified version
 """
 
 import argparse
-import os
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -12,8 +12,13 @@ from typing import Optional
 import cv2
 import face_recognition
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+import camera_utils
+from camera_utils import VIDEO_SOURCE_HELP, resolve_video_source
+
+DATA_DIR = REPO_ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -22,30 +27,13 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Capture a photo for face analysis using a local camera or stream"
     )
-    parser.add_argument(
-        "--video-source",
-        default=None,
-        help="Camera index (e.g. 0) or stream URL (e.g. udp://host.docker.internal:5000)"
-    )
+    parser.add_argument("--video-source", default=None, help=VIDEO_SOURCE_HELP)
     return parser.parse_args()
-
-
-def resolve_video_source(cli_value: Optional[str]) -> str:
-    """Resolve the video source from CLI or the VIDEO_SOURCE environment variable"""
-    env_value = os.getenv("VIDEO_SOURCE")
-    if cli_value:
-        return cli_value
-    if env_value:
-        return env_value
-    return "0"
 
 
 def open_capture(video_source: str) -> Optional[cv2.VideoCapture]:
     """Create a VideoCapture using either a numeric index or URL"""
-    if video_source.isdigit():
-        cap = cv2.VideoCapture(int(video_source))
-    else:
-        cap = cv2.VideoCapture(video_source)
+    cap = camera_utils.open_capture(video_source)
     if not cap.isOpened():
         print(f"❌ Error: Cannot access video source {video_source}")
         return None

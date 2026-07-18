@@ -9,6 +9,12 @@ from ultralytics import YOLO
 import time
 import argparse
 import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from camera_utils import VIDEO_SOURCE_HELP, resolve_video_source
 
 
 class RealtimeYOLODetector:
@@ -257,8 +263,8 @@ def main():
     Main function for real-time YOLO detection
     """
     parser = argparse.ArgumentParser(description='Real-time YOLO Object Detection')
-    parser.add_argument('--video-source', type=str, default='0',
-                       help='Video source (0 for webcam, or path/URL to video)')
+    parser.add_argument('--video-source', type=str, default=None,
+                       help=VIDEO_SOURCE_HELP + ' A video file path also works.')
     parser.add_argument('--model', type=str, default='yolov8n.pt',
                        help='YOLO model path (default: yolov8n.pt)')
     parser.add_argument('--conf', type=float, default=0.5,
@@ -268,24 +274,15 @@ def main():
     
     args = parser.parse_args()
     
-    # Handle video source
-    video_source = args.video_source
+    # Resolve source: CLI flag > VIDEO_SOURCE env var > interactive camera prompt
+    video_source = resolve_video_source(args.video_source)
     if video_source.isdigit():
         video_source = int(video_source)
     elif not os.path.exists(video_source) and not video_source.startswith(('http://', 'https://', 'rtsp://', 'udp://')):
         print(f"Warning: Video source '{video_source}' not found")
         print("Falling back to webcam (0)")
         video_source = 0
-    
-    # Check for environment variable
-    env_video_source = os.environ.get('VIDEO_SOURCE')
-    if env_video_source:
-        if env_video_source.isdigit():
-            video_source = int(env_video_source)
-        else:
-            video_source = env_video_source
-        print(f"Using VIDEO_SOURCE from environment: {video_source}")
-    
+
     # Initialize detector
     detector = RealtimeYOLODetector(
         model_path=args.model,
