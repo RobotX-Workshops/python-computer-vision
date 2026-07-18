@@ -10,6 +10,10 @@
         "source.fixAll.markdownlint": "explicit"
     },
     "cSpell.words": [
+        "axvline",
+        "gaussian",
+        "linestyle",
+        "sobel",
         "thresholding",
         "yourname",
         "yourusername"
